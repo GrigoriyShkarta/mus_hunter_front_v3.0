@@ -1,0 +1,32 @@
+{
+	"main": {
+		"people": "люди",
+		"bands": "гурти",
+		"sign_in": "Увійти",
+		"welcome": "Ласкаво просимо до спільноти музикантів",
+		"email": "електронна пошта",
+		"password": "пароль",
+		"submitting": "Відправляю...",
+		"noRegistrationText": "Не зареєстровані на MusHunter?",
+		"join": "Приєднуйся",
+		"forgotPassword": "забув пароль?",
+		"registration": "Регістрація",
+		"repeatPassword": "Повтори пароль",
+		"haveAccount": "Вже маєш аккаунт?",
+		"firstName": "ім'я",
+		"lastName": "прізвище",
+		"send": "Надіслати",
+		"passwordRecovery": "Відновлення паролю",
+		"forgotPasswordText": "Дотримуйтесь інструкцій які прийдуть на вказану пошту, якщо лист не прийшов перевірте папку спам",
+		"back": "Назад"
+	},
+	"validation": {
+		"email": "Недійсна адреса електронної пошти",
+		"noSpaceField": "Поле не повинно містити пробілів",
+		"passwordLength": "Пароль має бути не менше 6 символів",
+		"latinSymbolsContainPassword": "Пароль повинен містити хоча б одну латинську літеру",
+		"numberContainPassword": "Пароль повинен містити хоча б одне число",
+		"symbolContain": "Поле повинно містити літери",
+		"passwordsNotMatch": "Паролі не збігаються"
+	}
+}

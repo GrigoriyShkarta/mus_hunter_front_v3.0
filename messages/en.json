@@ -1,0 +1,32 @@
+{
+	"main": {
+		"people": "people",
+		"bands": "bands",
+		"sign_in": "Sign In",
+		"welcome": "Welcome to your musician community",
+		"email": "email",
+		"password": "password",
+		"submitting": "Submitting...",
+		"noRegistrationText": "Not on MushHunter?",
+		"join": "Join",
+		"forgotPassword": "forgot password?",
+		"registration": "Registration",
+		"repeatPassword": "Repeat password",
+		"haveAccount": "Already have an account?",
+		"firstName": "first Name",
+		"lastName": "last Name",
+		"send": "Send",
+		"passwordRecovery": "Password recovery",
+		"forgotPasswordText": "Follow the instructions that will come to the specified mail, if the letter has not arrived, check the spam folder",
+		"back": "Back"
+	},
+	"validation": {
+		"email": "Invalid email address",
+		"noSpaceField": "field must not contain spaces",
+		"passwordLength": "Password must be at least 6 characters",
+		"latinSymbolsContainPassword": "Password must contain at least one Latin letter",
+		"numberContainPassword": "Password must contain at least one number",
+		"symbolContain": "Field must contain words",
+		"passwordsNotMatch": "Passwords do not match"
+	}
+}
