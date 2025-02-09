@@ -18,7 +18,8 @@
 		"send": "Send",
 		"passwordRecovery": "Password recovery",
 		"forgotPasswordText": "Follow the instructions that will come to the specified mail, if the letter has not arrived, check the spam folder",
-		"back": "Back"
+		"back": "Back",
+		"loginWithGoogle": "Sign in with Google"
 	},
 	"validation": {
 		"email": "Invalid email address",
@@ -27,6 +28,9 @@
 		"latinSymbolsContainPassword": "Password must contain at least one Latin letter",
 		"numberContainPassword": "Password must contain at least one number",
 		"symbolContain": "Field must contain words",
-		"passwordsNotMatch": "Passwords do not match"
+		"passwordsNotMatch": "Passwords do not match",
+		"smtWrong": "Something went wrong, please try again later",
+		"wrongSignIn": "Wrong email or password",
+		"emailAlreadyInUse": "Email already in use"
 	}
 }

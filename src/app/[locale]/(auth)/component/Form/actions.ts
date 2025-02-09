@@ -1,78 +1,183 @@
-import { Field } from "@/lib/constants";
+import { Field } from '@/lib/constants'
+import { auth, googleProvider } from '@/lib/firebase'
+import { FirebaseError } from '@firebase/util'
 import {
-	ForgotPasswordSchema,
-	RegistrationSchema,
-	SignInSchema,
-} from "./shema";
-import { RegistrationForm, SignInForm, ForgotPasswordForm } from "./types";
+	createUserWithEmailAndPassword,
+	sendPasswordResetEmail,
+	signInWithEmailAndPassword,
+	signInWithPopup,
+} from 'firebase/auth'
+import { ForgotPasswordSchema, RegistrationSchema, SignInSchema } from './shema'
+import {
+	FirebaseErrorCode,
+	ForgotPasswordForm,
+	RegistrationForm,
+	SignInForm,
+} from './types'
 
-export function signIn(prevState: SignInForm, formData: FormData): SignInForm {
+const handleFirebaseError = (error: FirebaseError) => {
+	const errorCode = error.code as FirebaseErrorCode
+	switch (errorCode) {
+		case 'auth/invalid-credential':
+			return {
+				[Field.email]: ['validation.wrongSignIn'],
+				[Field.password]: ['validation.wrongSignIn'],
+			}
+		case 'auth/email-already-in-use':
+			return {
+				[Field.email]: ['validation.emailAlreadyInUse'],
+			}
+		default:
+			return {
+				responseError: 'validation.smtWrong',
+			}
+	}
+}
+
+export async function signIn(
+	prevState: SignInForm,
+	formData: FormData
+): Promise<SignInForm> {
 	const rawData = {
-		[Field.email]: formData.get(Field.email),
-		[Field.password]: formData.get(Field.password),
-	};
+		[Field.email]: formData.get(Field.email) as string,
+		[Field.password]: formData.get(Field.password) as string,
+	}
 
-	const result = SignInSchema.safeParse(rawData);
+	const result = SignInSchema.safeParse(rawData)
 
 	if (!result.success) {
 		return {
-			...(rawData as SignInForm),
+			...rawData,
 			errors: result.error.flatten().fieldErrors,
-		};
+		}
 	}
 
-	return {
-		...result.data,
-		errors: null,
-	};
+	try {
+		await signInWithEmailAndPassword(
+			auth,
+			rawData[Field.email],
+			rawData[Field.password]
+		)
+		return {
+			...rawData,
+			success: true,
+			errors: null,
+		}
+	} catch (error) {
+		if (error instanceof FirebaseError) {
+			return {
+				...rawData,
+				success: false,
+				errors: handleFirebaseError(error),
+			}
+		}
+		return {
+			...rawData,
+			success: false,
+			errors: {
+				responseError: 'validation.smtWrong',
+			},
+		}
+	}
 }
 
-export function registration(
+export async function registration(
 	prevState: RegistrationForm,
 	formData: FormData
-): RegistrationForm {
+): Promise<RegistrationForm> {
 	const rawData = {
-		[Field.firstName]: formData.get(Field.firstName),
-		[Field.lastName]: formData.get(Field.lastName),
-		[Field.email]: formData.get(Field.email),
-		[Field.password]: formData.get(Field.password),
-		[Field.repeatPassword]: formData.get(Field.repeatPassword),
-	};
+		[Field.firstName]: formData.get(Field.firstName) as string,
+		[Field.lastName]: formData.get(Field.lastName) as string,
+		[Field.email]: formData.get(Field.email) as string,
+		[Field.password]: formData.get(Field.password) as string,
+		[Field.repeatPassword]: formData.get(Field.repeatPassword) as string,
+	}
 
-	const result = RegistrationSchema.safeParse(rawData);
+	const result = RegistrationSchema.safeParse(rawData)
 
 	if (!result.success) {
 		return {
-			...(rawData as RegistrationForm),
+			...rawData,
 			errors: result.error.flatten().fieldErrors,
-		};
+		}
 	}
 
-	return {
-		...result.data,
-		errors: null,
-	};
+	try {
+		await createUserWithEmailAndPassword(
+			auth,
+			rawData[Field.email],
+			rawData[Field.password]
+		)
+		return {
+			...rawData,
+			success: true,
+			errors: null,
+		}
+	} catch (error) {
+		if (error instanceof FirebaseError) {
+			return {
+				...rawData,
+				success: false,
+				errors: handleFirebaseError(error),
+			}
+		}
+		return {
+			...rawData,
+			success: false,
+			errors: {
+				responseError: 'validation.smtWrong',
+			},
+		}
+	}
 }
 
-export function forgotPassword(
+export async function forgotPassword(
 	prevState: ForgotPasswordForm,
 	formData: FormData
-): ForgotPasswordForm {
+): Promise<ForgotPasswordForm> {
 	const rawData = {
-		[Field.email]: formData.get(Field.email),
-	};
+		[Field.email]: formData.get(Field.email) as string,
+	}
 
-	const result = ForgotPasswordSchema.safeParse(rawData);
+	const result = ForgotPasswordSchema.safeParse(rawData)
 
 	if (!result.success) {
 		return {
-			...(rawData as ForgotPasswordForm),
+			...rawData,
 			errors: result.error.flatten().fieldErrors,
-		};
+		}
 	}
 
-	return {
-		...result.data,
-		errors: null,
-	};
+	try {
+		await sendPasswordResetEmail(auth, rawData[Field.email])
+		return {
+			...rawData,
+			success: true,
+			errors: null,
+		}
+	} catch (error) {
+		if (error instanceof FirebaseError) {
+			return {
+				...rawData,
+				success: false,
+				errors: handleFirebaseError(error),
+			}
+		}
+		return {
+			...rawData,
+			success: false,
+			errors: {
+				responseError: 'validation.smtWrong',
+			},
+		}
+	}
+}
+
+export async function signInWithGoogle() {
+	try {
+		const result = await signInWithPopup(auth, googleProvider)
+		console.log(result.user)
+	} catch (error) {
+		console.error('Ошибка аутентификации:', error)
+	}
 }
