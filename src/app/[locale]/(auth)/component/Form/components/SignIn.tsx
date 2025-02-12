@@ -18,10 +18,14 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { FaGoogle, FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
-import { signIn, signInWithGoogle } from '../actions'
+import { signIn } from '../actions'
 import { Form, SignInForm } from '../types'
+import { useRouter } from 'next/navigation'
+import { googleAuth } from '@/api/user'
+import { auth, googleProvider } from '@/lib/firebase'
+import { signInWithPopup } from 'firebase/auth'
 
 interface Props {
 	setFrom: Dispatch<SetStateAction<Form>>
@@ -37,16 +41,38 @@ export default function SignIn({ setFrom }: Props) {
 		}
 	)
 	const t = useTranslations()
+	const router = useRouter()
+	const locale = useLocale()
 	const showNotification = useNotification()
 
 	useEffect(() => {
 		if (formState.success) {
-			console.log('Success')
+			router.push(`${locale}/user`)
 		}
 		if (formState.errors?.responseError) {
 			showNotification(t(`${formState.errors.responseError}`), 'error')
 		}
 	}, [formState])
+
+	const signInWithGoogle = async () => {
+		try {
+			const result = await signInWithPopup(auth, googleProvider)
+			const fullName = result.user.displayName || 'Unknown User'
+			const [firstName, lastName] = fullName.split(' ')
+			const commonData = {
+				[Field.email]: result.user.email!,
+				[Field.firstName]: firstName,
+				[Field.lastName]: lastName,
+			}
+			const res = await googleAuth(commonData)
+
+			if (res) {
+				router.push(`${locale}/user`)
+			}
+		} catch (error) {
+			console.error('Ошибка аутентификации:', error)
+		}
+	}
 
 	return (
 		<Stack

@@ -1,11 +1,10 @@
 import { Field } from '@/lib/constants'
-import { auth, googleProvider } from '@/lib/firebase'
+import { auth } from '@/lib/firebase'
 import { FirebaseError } from '@firebase/util'
 import {
 	createUserWithEmailAndPassword,
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
-	signInWithPopup,
 } from 'firebase/auth'
 import { ForgotPasswordSchema, RegistrationSchema, SignInSchema } from './shema'
 import {
@@ -64,19 +63,10 @@ export async function signIn(
 			errors: null,
 		}
 	} catch (error) {
-		if (error instanceof FirebaseError) {
-			return {
-				...rawData,
-				success: false,
-				errors: handleFirebaseError(error),
-			}
-		}
 		return {
 			...rawData,
 			success: false,
-			errors: {
-				responseError: 'validation.smtWrong',
-			},
+			errors: handleFirebaseError(error as FirebaseError),
 		}
 	}
 }
@@ -114,19 +104,10 @@ export async function registration(
 			errors: null,
 		}
 	} catch (error) {
-		if (error instanceof FirebaseError) {
-			return {
-				...rawData,
-				success: false,
-				errors: handleFirebaseError(error),
-			}
-		}
 		return {
 			...rawData,
 			success: false,
-			errors: {
-				responseError: 'validation.smtWrong',
-			},
+			errors: handleFirebaseError(error as FirebaseError),
 		}
 	}
 }
@@ -156,28 +137,10 @@ export async function forgotPassword(
 			errors: null,
 		}
 	} catch (error) {
-		if (error instanceof FirebaseError) {
-			return {
-				...rawData,
-				success: false,
-				errors: handleFirebaseError(error),
-			}
-		}
 		return {
 			...rawData,
 			success: false,
-			errors: {
-				responseError: 'validation.smtWrong',
-			},
+			errors: handleFirebaseError(error as FirebaseError),
 		}
-	}
-}
-
-export async function signInWithGoogle() {
-	try {
-		const result = await signInWithPopup(auth, googleProvider)
-		console.log(result.user)
-	} catch (error) {
-		console.error('Ошибка аутентификации:', error)
 	}
 }
