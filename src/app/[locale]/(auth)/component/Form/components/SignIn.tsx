@@ -57,6 +57,7 @@ export default function SignIn({ setFrom }: Props) {
 	const signInWithGoogle = async () => {
 		try {
 			const result = await signInWithPopup(auth, googleProvider)
+			console.log('result', result)
 			const fullName = result.user.displayName || 'Unknown User'
 			const [firstName, lastName] = fullName.split(' ')
 			const commonData = {

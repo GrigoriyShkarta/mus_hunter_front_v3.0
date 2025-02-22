@@ -13,6 +13,7 @@ import {
 	RegistrationForm,
 	SignInForm,
 } from './types'
+import { useUserStore } from '@/store/userStore'
 
 const handleFirebaseError = (error: FirebaseError) => {
 	const errorCode = error.code as FirebaseErrorCode
@@ -52,11 +53,14 @@ export async function signIn(
 	}
 
 	try {
-		await signInWithEmailAndPassword(
+		const res = await signInWithEmailAndPassword(
 			auth,
 			rawData[Field.email],
 			rawData[Field.password]
 		)
+
+		const token = await res.user.getIdToken()
+		useUserStore.getState().setToken(token)
 		return {
 			...rawData,
 			success: true,
