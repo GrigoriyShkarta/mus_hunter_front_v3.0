@@ -1,15 +1,8 @@
 'use client'
 
-import {
-	Dispatch,
-	SetStateAction,
-	useActionState,
-	useEffect,
-	useState,
-} from 'react'
+import { Dispatch, SetStateAction, useActionState, useState } from 'react'
 
-import useNotification from '@/hooks/useNotification'
-import { Field } from '@/lib/constants'
+import { Field, StorageToken } from '@/lib/constants'
 import {
 	Button,
 	IconButton,
@@ -22,10 +15,11 @@ import { useLocale, useTranslations } from 'next-intl'
 import { FaGoogle, FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
 import { signIn } from '../actions'
 import { Form, SignInForm } from '../types'
-import { useRouter } from 'next/navigation'
-import { googleAuth } from '@/api/user'
+import { googleAuth } from '@/api/user/route'
 import { auth, googleProvider } from '@/lib/firebase'
 import { signInWithPopup } from 'firebase/auth'
+import { redirect } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 interface Props {
 	setFrom: Dispatch<SetStateAction<Form>>
@@ -41,38 +35,37 @@ export default function SignIn({ setFrom }: Props) {
 		}
 	)
 	const t = useTranslations()
-	const router = useRouter()
 	const locale = useLocale()
-	const showNotification = useNotification()
-
-	useEffect(() => {
-		if (formState.success) {
-			router.push(`${locale}/user`)
-		}
-		if (formState.errors?.responseError) {
-			showNotification(t(`${formState.errors.responseError}`), 'error')
-		}
-	}, [formState])
+	let id: string
 
 	const signInWithGoogle = async () => {
 		try {
 			const result = await signInWithPopup(auth, googleProvider)
-			console.log('result', result)
 			const fullName = result.user.displayName || 'Unknown User'
 			const [firstName, lastName] = fullName.split(' ')
+			console.log('result', result)
 			const commonData = {
+				id: result.user.uid,
 				[Field.email]: result.user.email!,
 				[Field.firstName]: firstName,
 				[Field.lastName]: lastName,
+				avatarUrl: result.user?.photoURL ?? '',
 			}
 			const res = await googleAuth(commonData)
 
 			if (res) {
-				router.push(`${locale}/user`)
+				const token = await result.user.getIdToken()
+				Cookies.set(StorageToken, token)
+				id = result.user.uid
+			} else {
+				return
 			}
 		} catch (error) {
 			console.error('Ошибка аутентификации:', error)
+			throw new Error()
 		}
+
+		redirect(`/${locale}/user/${id}`)
 	}
 
 	return (

@@ -1,10 +1,10 @@
 'use client'
 import { IconButton } from '@mui/material'
-import { SnackbarProvider, useSnackbar } from 'notistack'
+import { SnackbarKey, SnackbarProvider, useSnackbar } from 'notistack'
 import { ReactNode } from 'react'
 import { MdClose } from 'react-icons/md'
 
-function SnackbarCloseButton({ snackbarKey }: any) {
+function SnackbarCloseButton({ snackbarKey }: { snackbarKey: SnackbarKey }) {
 	const { closeSnackbar } = useSnackbar()
 
 	return (

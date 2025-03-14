@@ -1,9 +1,18 @@
-import createMiddleware from "next-intl/middleware";
-import { routing } from "./i18n/routing";
+import createMiddleware from 'next-intl/middleware'
+import { routing } from './i18n/routing'
+import { NextRequest, NextResponse } from 'next/server'
 
-export default createMiddleware(routing);
+export default createMiddleware(routing)
+
+export function middleware(request: NextRequest) {
+	const { pathname } = request.nextUrl
+	const locale = request.cookies.get('NEXT_LOCALE')?.value || 'en'
+
+	if (!pathname.startsWith(`/${locale}`)) {
+		return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url))
+	}
+}
 
 export const config = {
-	// Match only internationalized pathnames
-	matcher: ["/", "/(ua|en)/:path*"],
-};
+	matcher: ['/', '/(ua|en)/:path*'],
+}

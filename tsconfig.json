@@ -27,7 +27,7 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
-		"src/app/[locale]/(auth)/component/Form"
+		"src/components/Auth/component/Form"
 	],
 	"exclude": ["node_modules"]
 }

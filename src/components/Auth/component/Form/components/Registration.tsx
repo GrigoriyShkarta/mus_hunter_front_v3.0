@@ -44,9 +44,6 @@ export default function Registration({ setFrom }: Props) {
 	const showNotification = useNotification()
 
 	useEffect(() => {
-		if (formState.success) {
-			console.log('Success')
-		}
 		if (formState.errors?.responseError) {
 			showNotification(t(`${formState.errors.responseError}`), 'error')
 		}
@@ -56,8 +53,7 @@ export default function Registration({ setFrom }: Props) {
 		<Stack
 			component='form'
 			action={action}
-			display={'flex'}
-			flexDirection={'column'}
+			direction={'column'}
 			gap={2}
 			boxShadow={3}
 			borderRadius={2}

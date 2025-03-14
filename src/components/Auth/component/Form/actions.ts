@@ -1,3 +1,5 @@
+'use server'
+
 import { Field } from '@/lib/constants'
 import { auth } from '@/lib/firebase'
 import { FirebaseError } from '@firebase/util'
@@ -13,7 +15,8 @@ import {
 	RegistrationForm,
 	SignInForm,
 } from './types'
-import { useUserStore } from '@/store/userStore'
+import { redirect } from 'next/navigation'
+import { cookies, headers } from 'next/headers'
 
 const handleFirebaseError = (error: FirebaseError) => {
 	const errorCode = error.code as FirebaseErrorCode
@@ -34,10 +37,8 @@ const handleFirebaseError = (error: FirebaseError) => {
 	}
 }
 
-export async function signIn(
-	prevState: SignInForm,
-	formData: FormData
-): Promise<SignInForm> {
+export async function signIn(prevState: SignInForm, formData: FormData) {
+	const cookieStore = await cookies()
 	const rawData = {
 		[Field.email]: formData.get(Field.email) as string,
 		[Field.password]: formData.get(Field.password) as string,
@@ -52,20 +53,17 @@ export async function signIn(
 		}
 	}
 
+	let id
+
 	try {
 		const res = await signInWithEmailAndPassword(
 			auth,
 			rawData[Field.email],
 			rawData[Field.password]
 		)
-
 		const token = await res.user.getIdToken()
-		useUserStore.getState().setToken(token)
-		return {
-			...rawData,
-			success: true,
-			errors: null,
-		}
+		id = res.user.uid
+		cookieStore.set('musToken', token)
 	} catch (error) {
 		return {
 			...rawData,
@@ -73,12 +71,16 @@ export async function signIn(
 			errors: handleFirebaseError(error as FirebaseError),
 		}
 	}
+
+	const locale = (await headers()).get('NEXT_LOCALE') || 'ua'
+	redirect(`/${locale}/user/${id}`)
 }
 
 export async function registration(
 	prevState: RegistrationForm,
 	formData: FormData
-): Promise<RegistrationForm> {
+) {
+	const cookieStore = await cookies()
 	const rawData = {
 		[Field.firstName]: formData.get(Field.firstName) as string,
 		[Field.lastName]: formData.get(Field.lastName) as string,
@@ -97,16 +99,13 @@ export async function registration(
 	}
 
 	try {
-		await createUserWithEmailAndPassword(
+		const res = await createUserWithEmailAndPassword(
 			auth,
 			rawData[Field.email],
 			rawData[Field.password]
 		)
-		return {
-			...rawData,
-			success: true,
-			errors: null,
-		}
+		const token = await res.user.getIdToken()
+		cookieStore.set('musToken', token)
 	} catch (error) {
 		return {
 			...rawData,
@@ -114,6 +113,9 @@ export async function registration(
 			errors: handleFirebaseError(error as FirebaseError),
 		}
 	}
+
+	const locale = (await headers()).get('NEXT_LOCALE') || 'ua'
+	redirect(`/${locale}/user`)
 }
 
 export async function forgotPassword(
