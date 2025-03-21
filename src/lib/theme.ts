@@ -21,6 +21,20 @@ const theme = createTheme({
 			fontWeight: 500,
 		},
 	},
+	components: {
+		MuiChip: {
+			styleOverrides: {
+				root: {
+					height: 'auto',
+					padding: '2px 8px',
+					fontSize: '0.8rem',
+				},
+				label: {
+					padding: '0px',
+				},
+			},
+		},
+	},
 })
 
 export default theme

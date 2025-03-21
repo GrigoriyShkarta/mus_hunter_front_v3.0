@@ -43,7 +43,7 @@ export default function SignIn({ setFrom }: Props) {
 			const result = await signInWithPopup(auth, googleProvider)
 			const fullName = result.user.displayName || 'Unknown User'
 			const [firstName, lastName] = fullName.split(' ')
-			console.log('result', result)
+			// console.log('result', result)
 			const commonData = {
 				id: result.user.uid,
 				[Field.email]: result.user.email!,
@@ -53,8 +53,11 @@ export default function SignIn({ setFrom }: Props) {
 			}
 			const res = await googleAuth(commonData)
 
+			// console.log('signin', result)
+
 			if (res) {
 				const token = await result.user.getIdToken()
+				// const refreshToken = result.user.stsTokenManager.refreshToken
 				Cookies.set(StorageToken, token)
 				id = result.user.uid
 			} else {

@@ -9,6 +9,8 @@ import { BiLogOut } from 'react-icons/bi'
 import Cookies from 'js-cookie'
 import { StorageToken } from '@/lib/constants'
 import { redirect } from 'next/navigation'
+import { auth } from '@/lib/firebase'
+import { signOut } from 'firebase/auth'
 
 interface ProfileMenuProps {
 	open: boolean
@@ -26,9 +28,11 @@ export default function ProfileMenu({
 	const setUser = useUserStore(state => state.setUser)
 	const locale = useLocale()
 
-	const logout = () => {
+	const logout = async () => {
 		setUser(null)
 		Cookies.remove(StorageToken)
+		await signOut(auth)
+		handleClose()
 		redirect('/')
 	}
 

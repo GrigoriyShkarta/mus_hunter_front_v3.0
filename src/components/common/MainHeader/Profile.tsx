@@ -16,8 +16,6 @@ export default function Profile() {
 	const user = useUserStore(state => state.user)
 	const openMenu = Boolean(anchorMenuEl)
 
-	console.log('user', user)
-
 	return (
 		<Toolbar sx={{ padding: '0' }}>
 			{user ? (

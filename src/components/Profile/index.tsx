@@ -4,9 +4,10 @@ import ProfileInfo from './ProfileInfo'
 
 export default async function Profile() {
 	const user = await getUser()
+	console.log('user', user)
 	return (
 		<AuthProvider user={user}>
-			<ProfileInfo />
+			<ProfileInfo profile={user} />
 		</AuthProvider>
 	)
 }

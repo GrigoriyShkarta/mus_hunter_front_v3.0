@@ -6,7 +6,7 @@ export default createMiddleware(routing)
 
 export function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl
-	const locale = request.cookies.get('NEXT_LOCALE')?.value || 'en'
+	const locale = request.cookies.get('NEXT_LOCALE')?.value || 'ua'
 
 	if (!pathname.startsWith(`/${locale}`)) {
 		return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url))

@@ -6,6 +6,8 @@ import config from '@/config'
 import { StorageToken } from '@/lib/constants'
 import { cookies } from 'next/headers'
 import { IUser } from '@/lib/globalTypes'
+import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 const { API_URL } = config
 
@@ -39,7 +41,7 @@ export async function getUser(): Promise<IUser> {
 		credentials: 'include',
 	})
 
-	console.log('response', response)
+	// console.log('response', response)
 
 	// 	if (response.status === 401 && authToken) {
 	// 		const newToken = await refreshToken(authToken)
@@ -56,7 +58,7 @@ export async function getUser(): Promise<IUser> {
 	// 	}
 
 	const data = await response.json()
-	console.log('data', data)
+	// console.log('data', data)
 	return data
 }
 

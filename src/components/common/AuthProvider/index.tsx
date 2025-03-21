@@ -1,49 +1,56 @@
 'use client'
 
 import { useUserStore } from '@/store/userStore'
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { getUser } from '@/api/user/route'
 import Cookies from 'js-cookie'
 import { auth } from '@/lib/firebase'
 import { StorageToken } from '@/lib/constants'
 import { onAuthStateChanged } from 'firebase/auth'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { IUser } from '@/lib/globalTypes'
 
 interface AuthProviderProps {
 	children: ReactNode
+	user?: IUser
 }
 
-export default function AuthProvider({ children }: AuthProviderProps) {
+export default function AuthProvider({ children, user }: AuthProviderProps) {
 	const setUser = useUserStore(state => state.setUser)
+	const [queryClient] = useState(() => new QueryClient())
 
 	useEffect(() => {
-		// Подписываемся на изменения состояния аутентификации
-		const unsubscribe = onAuthStateChanged(auth, async user => {
-			if (user) {
-				// Пользователь авторизован
-				const token = await user.getIdToken()
-				Cookies.set(StorageToken, token)
+		// 		const unsubscribe = onAuthStateChanged(auth, async user => {
+		// 			if (user) {
+		// 				const token = await user.getIdToken()
+		// 				Cookies.set(StorageToken, token)
+		//
+		// 				try {
+		// 					const userData = await getUser()
+		// 					if (userData && userData.id === user.uid) {
+		// 						setUser(userData)
+		// 					}
+		// 				} catch (error) {
+		// 					setUser(null)
+		// 					console.error('Failed to fetch user:', error)
+		// 				}
+		// 			} else {
+		// 				setUser(null)
+		// 				Cookies.remove(StorageToken)
+		// 				console.log('User is logged out')
+		// 			}
+		// 		})
+		const authUser = auth.currentUser
+		const token = authUser?.getIdToken()
 
-				// Получаем данные пользователя
-				try {
-					const userData = await getUser()
-					if (userData && userData.id === user.uid) {
-						setUser(userData)
-					}
-				} catch (error) {
-					setUser(null)
-					console.error('Failed to fetch user:', error)
-				}
-			} else {
-				// Пользователь не авторизован
-				setUser(null)
-				Cookies.remove(StorageToken)
-				console.log('User is logged out')
-			}
-		})
+		if (token && user) {
+			setUser(user)
+		}
 
-		// Отписываемся при размонтировании компонента
-		return () => unsubscribe()
-	}, [setUser])
+		// return () => unsubscribe()
+	}, [user])
 
-	return <>{children}</>
+	return (
+		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+	)
 }

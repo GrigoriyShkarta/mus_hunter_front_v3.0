@@ -1,9 +1,12 @@
-import { getUser } from '@/api/user/route'
 import { Avatar, Stack } from '@mui/material'
+import Links from './Links'
+import { IUser } from '@/lib/globalTypes'
 
-export default async function Banner() {
-	const user = await getUser()
+interface Props {
+	profile: IUser
+}
 
+export default async function Banner({ profile }: Props) {
 	return (
 		<Stack
 			bgcolor={'#212121'}
@@ -13,7 +16,7 @@ export default async function Banner() {
 			position={'relative'}
 		>
 			<Avatar
-				src={user?.avatar}
+				src={profile?.avatar}
 				sx={{
 					width: '180px',
 					height: '180px',
@@ -23,6 +26,8 @@ export default async function Banner() {
 					border: '2px solid white',
 				}}
 			/>
+
+			<Links />
 		</Stack>
 	)
 }
