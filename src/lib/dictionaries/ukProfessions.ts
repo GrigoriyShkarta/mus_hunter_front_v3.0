@@ -1,0 +1,51 @@
+export const ukProfessions = {
+  // Именительный падеж (хто?) - для отображения в профиле
+  nominative: {
+    guitar: 'гітарист',
+    vocal: 'вокаліст',
+    drums: 'барабанщик',
+    bass: 'бас-гітарист',
+    piano: 'піаніст',
+    violin: 'скрипаль',
+    saxophone: 'саксофоніст',
+    trumpet: 'трубач',
+    flute: 'флейтист',
+    cello: 'віолончеліст',
+    dj: 'діджей',
+    manager: 'менеджер',
+    producer: 'продюсер',
+    sound: 'звукорежисер',
+    composer: 'композитор',
+    conductor: 'диригент',
+    arranger: 'аранжувальник',
+    backing_vocal: 'бек-вокаліст',
+    percussion: 'перкусіоніст',
+    keyboard: 'клавішник',
+  },
+
+  // Родительный падеж (кого?) - для поисковых объявлений
+  genitive: {
+    guitar: 'гітариста',
+    vocal: 'вокаліста',
+    drums: 'барабанщика',
+    bass: 'бас-гітариста',
+    piano: 'піаніста',
+    violin: 'скрипаля',
+    saxophone: 'саксофоніста',
+    trumpet: 'трубача',
+    flute: 'флейтиста',
+    cello: 'віолончеліста',
+    dj: 'діджея',
+    manager: 'менеджера',
+    producer: 'продюсера',
+    sound: 'звукорежисера',
+    composer: 'композитора',
+    conductor: 'диригента',
+    arranger: 'аранжувальника',
+    backing_vocal: 'бек-вокаліста',
+    percussion: 'перкусіоніста',
+    keyboard: 'клавішника',
+  },
+} as const;
+
+export type UkrainianProfessionKey = keyof typeof ukProfessions.nominative;

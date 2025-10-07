@@ -1,21 +1,21 @@
-import { useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { useForm, SubmitHandler } from 'react-hook-form';
 import AvatarEditor from 'react-avatar-editor';
-
-import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  CreateBandFormData,
-  createBandSchema,
-  MusicianMainInfoFormData,
-} from '@/lib/validations';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Settings } from '@/services/api-validation';
 import { useQuery } from '@tanstack/react-query';
-import { getSettings } from '@/app/actions/settings';
-import { createBand } from '@/services/band';
 
-export default function useCreateBandForm() {
+import { getSettings } from '@/app/actions/settings';
+import { updateMainMusicianInfo } from '@/services/musician';
+
+import { Musician, Settings } from '@/services/api-validation';
+import {
+  MusicianMainInfoFormData,
+  musicianMainInfoSchema,
+} from '@/lib/validations';
+
+export function useProfileEditForm(profile: Musician) {
   const [open, setOpen] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -30,18 +30,27 @@ export default function useCreateBandForm() {
     reset,
     control,
     formState: { errors },
-  } = useForm<CreateBandFormData>({
-    resolver: zodResolver(createBandSchema),
+  } = useForm<MusicianMainInfoFormData>({
+    resolver: zodResolver(musicianMainInfoSchema),
     reValidateMode: 'onChange',
   });
 
-  console.log('errors', errors);
+  useEffect(() => {
+    reset({
+      name: profile.name,
+      city: profile.city?.id ?? '',
+      telephone: profile.telephone ?? '',
+      birthDate: profile?.birthDate ? profile.birthDate.slice(0, 10) : '',
+      avatar: profile.avatar ?? '',
+      links: profile.links,
+    });
+  }, [profile]);
 
   const { data: commonData } = useQuery<Settings>({
     queryKey: ['profile-common'],
     queryFn: getSettings,
     refetchOnWindowFocus: false,
-    placeholderData: { skills: [], styles: [], cities: [] },
+    placeholderData: { skills: [], styles: [], cities: [], ages: [] },
   });
 
   const handleAvatarClick = () => {
@@ -55,7 +64,7 @@ export default function useCreateBandForm() {
 
   const onSubmit: SubmitHandler<MusicianMainInfoFormData> = async (data) => {
     let avatarFileToSend: File | undefined = undefined;
-    console.log('hi');
+
     if (editorRef.current) {
       const canvas = editorRef.current.getImageScaledToCanvas();
       const blob = await new Promise<Blob | null>((resolve) =>
@@ -73,11 +82,10 @@ export default function useCreateBandForm() {
         ...data,
         avatar: avatarFileToSend,
       };
-      console.log('payload', payload);
-      await createBand(payload);
-      // reset()
-      // router.refresh()
-      // setOpen(false)
+      await updateMainMusicianInfo(payload);
+      reset();
+      router.refresh();
+      setOpen(false);
     } catch (e) {
       console.error(e);
     }

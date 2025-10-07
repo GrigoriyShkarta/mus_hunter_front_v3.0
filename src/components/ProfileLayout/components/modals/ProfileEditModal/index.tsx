@@ -1,20 +1,26 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMusician } from '@/context/MusicianContext';
-import { Musician } from '@/services/api-validation';
-import { Button } from '@/components/ui/button';
-import Modal from '@/components/common/Modal';
-import useCreateBandForm from '@/components/Profile/components/modals/CreateBandModal/useCreateBandForm';
-import AvatarEditorBlock from '@/components/Profile/components/modals/components/AvatarEditorBlock';
-import FormFields from '@/components/Profile/components/modals/CreateBandModal/FormFields';
-import LinksInputList from '@/components/Profile/components/modals/components/LinksInputList';
 import { Controller } from 'react-hook-form';
+
+import { Musician } from '@/services/api-validation';
+
+import { useProfileEditForm } from './useProfileEditForm';
+import { useMusician } from '@/context/MusicianContext';
+
+import AvatarEditorBlock from '../components/AvatarEditorBlock';
+import FormFields from './FormFields';
+import LinksInputList from '../components/LinksInputList';
+
+import Modal from '@/components/common/Modal';
+import { Button } from '@/components/ui/button';
+import { FiEdit } from 'react-icons/fi';
 
 interface Props {
   profile: Musician;
 }
-export default function CreateBandModal({ profile }: Props) {
+
+export default function ProfileEditModal({ profile }: Props) {
   const {
     control,
     errors,
@@ -35,26 +41,25 @@ export default function CreateBandModal({ profile }: Props) {
     setScale,
     handleAvatarClick,
     handleAvatarReset,
-  } = useCreateBandForm();
-  const t = useTranslations('profile');
+  } = useProfileEditForm(profile);
+
   const { musician } = useMusician();
+  const t = useTranslations('profile');
 
   return (
     musician &&
     musician.id === profile.id && (
       <>
-        <Button
-          variant="outline"
-          className="w-fit mt-2 flex"
+        <FiEdit
+          size={18}
+          className="absolute right-[20px] top-[15px] cursor-pointer"
           onClick={() => {
             setOpen(true);
             reset();
           }}
-        >
-          {t('add_new_band')}
-        </Button>
+        />
 
-        <Modal open={open} title={t('create_band')} setOpen={setOpen}>
+        <Modal open={open} title={t('edit_profile')} setOpen={setOpen}>
           <form
             className="flex flex-col gap-2"
             onSubmit={handleSubmit(onSubmit)}
@@ -72,9 +77,7 @@ export default function CreateBandModal({ profile }: Props) {
               handleAvatarClick={handleAvatarClick}
               handleAvatarReset={handleAvatarReset}
               t={t}
-              isCreateBand
             />
-
             <FormFields
               control={control}
               errors={errors}
@@ -82,7 +85,6 @@ export default function CreateBandModal({ profile }: Props) {
               register={register}
               t={t}
             />
-
             <Controller
               control={control}
               name="links"
@@ -95,8 +97,7 @@ export default function CreateBandModal({ profile }: Props) {
                 />
               )}
             />
-
-            <div className="flex justify-end gap-2 mt-2">
+            <div className="flex justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
